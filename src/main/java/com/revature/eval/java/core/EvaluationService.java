@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -365,9 +366,80 @@ public class EvaluationService {
 
 	}
 
+	/**
+	 * 8. Implement a program that translates from English to Pig Latin.
+	 * 
+	 * Pig Latin is a made-up children's language that's intended to be confusing.
+	 * It obeys a few simple rules (below), but when it's spoken quickly it's really
+	 * difficult for non-children (and non-native speakers) to understand.
+	 * 
+	 * Rule 1: If a word begins with a vowel sound, add an "ay" sound to the end of
+	 * the word. Rule 2: If a word begins with a consonant sound, move it to the end
+	 * of the word, and then add an "ay" sound to the end of the word. There are a
+	 * few more rules for edge cases, and there are regional variants too.
+	 * 
+	 * See http://en.wikipedia.org/wiki/Pig_latin for more details.
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public String toPigLatin(String string) {
+		String[] splitString = string.toLowerCase().split(" +");
+		String[] splitPig = new String[splitString.length];
+		char[] working = null;
+		char[] nuWorking = null;
+		for (int iter = 0; iter < splitString.length; iter ++)
+		{
+			working = splitString[iter].toCharArray();
+			if (working[0] == 'a' || working[0] == 'e' || working[0] == 'i' || working[0] == 'o' || working[0] == 'u')
+			{
+				nuWorking = new char[working.length+2];
+				for (int metaiter = 0; metaiter < working.length; metaiter++)
+				{
+					nuWorking[metaiter] = working[metaiter];
+				}
+				nuWorking[nuWorking.length-2] = 'a';
+				nuWorking[nuWorking.length-1] = 'y';
+			}
+			else if (working[0] == 't') {
+				if (working[1] == 'h') {
+					nuWorking = (splitString[iter].substring(2) + "thay").toCharArray();
+				}
+				else {
+					nuWorking = (splitString[iter].substring(1) + "tay").toCharArray();
+				}
+			} else if (working[0] == 's')
+			{
+				if (working [1] == 'h') {
+					nuWorking = (splitString[iter].substring(2) + "shay").toCharArray();
+				}
+				else if(working [1] == 'c' && working[2] == 'h') {
+					nuWorking = (splitString[iter].substring(3) + "schay").toCharArray();
+				}
+			} else if (working[0] == 'q')
+			{
+				if (working [1] == 'u') 
+				{
+					nuWorking = (splitString[iter].substring(2) + "quay").toCharArray();
+				}
+			} else {
+				nuWorking = (splitString[iter].substring(1) + ((Character)(working[0])).toString() + "ay").toCharArray();
+			}
+			splitPig[iter] = new String(nuWorking);
+			
+		}
+		
+		String igpayAtinlay = "";
+		for (int iter = 0; iter < splitPig.length; iter++)
+		{
+			igpayAtinlay = igpayAtinlay + splitPig[iter] + " ";
+		}
+		
+		return igpayAtinlay.trim();
+	}
 
 	/**
-	 * 8. An Armstrong number is a number that is the sum of its own digits each
+	 * 9. An Armstrong number is a number that is the sum of its own digits each
 	 * raised to the power of the number of digits.
 	 * 
 	 * For example:
@@ -397,41 +469,57 @@ public class EvaluationService {
 	}
 
 	/**
-	 * 9. Determine if a sentence is a pangram. A pangram (Greek: παν γράμμα, pan
-	 * gramma, "every letter") is a sentence using every letter of the alphabet at
-	 * least once. The best known English pangram is:
+	 * 10. Compute the prime factors of a given natural number.
 	 * 
-	 * The quick brown fox jumps over the lazy dog.
+	 * A prime number is only evenly divisible by itself and 1.
 	 * 
-	 * The alphabet used consists of ASCII letters a to z, inclusive, and is case
-	 * insensitive. Input will not contain non-ASCII symbols.
+	 * Note that 1 is not a prime number.
 	 * 
-	 * @param string
+	 * @param l
 	 * @return
 	 */
-	public boolean isPangram(String string) {
-		String stringLow = string.toLowerCase();
-		HashSet<Character> alpha = new HashSet<Character>();
-		for (char iter = 'a'; iter <= 'z'; iter++)
+	public List<Integer> calculatePrimeFactorsOf(long l) {
+		ArrayList<Integer> pfactors = new ArrayList<Integer>();
+		int primeScale = (int)Math.sqrt(l);
+		
+		//sieve for prime numbers
+		int[] primes = new int[primeScale];
+		int testval;
+		int metaiter;
+		
+		primes[0] = 2;
+		for (int iter = 1; iter < primeScale; iter++)
 		{
-			alpha.add(iter);
+			testval = primes[iter-1] + 1;
+			for (metaiter = 0; metaiter < iter-1; metaiter++)
+			{
+				if (testval % primes[metaiter] == 0) 
+				{
+					testval ++;
+					metaiter = 0;
+				}
+			}
+			primes[iter] = testval;
 		}
 		
-		char cur = '\0';
-		for (int siter = 0; siter < string.length(); siter++)
+		long cur = l;
+		for (int iter = 0; iter < primeScale; iter++)
 		{
-			cur = stringLow.charAt(siter);
-			if (alpha.contains(cur)) alpha.remove(cur);
-			if (alpha.isEmpty()) return true;
-			cur = '\0';
+			while (cur % primes[iter] == 0)
+			{
+				pfactors.add(primes[iter]);
+				cur /= primes[iter];
+			}
+			cur = l;
 		}
 		
-		return false;
+		if (pfactors.isEmpty()) pfactors.add((int)l);
+		
+		return pfactors;
 	}
 
-	
 	/**
-	 * 10. Create an implementation of the rotational cipher, also sometimes called
+	 * 11. Create an implementation of the rotational cipher, also sometimes called
 	 * the Caesar cipher.
 	 * 
 	 * The Caesar cipher is a simple shift cipher that relies on transposing all the
@@ -477,10 +565,46 @@ public class EvaluationService {
 		}
 
 	}
-	
 
 	/**
-	 * 11 & 12. Create an implementation of the atbash cipher, an ancient encryption
+	 * 12. Given a number n, determine what the nth prime is.
+	 * 
+	 * By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see
+	 * that the 6th prime is 13.
+	 * 
+	 * If your language provides methods in the standard library to deal with prime
+	 * numbers, pretend they don't exist and implement them yourself.
+	 * 
+	 * @param i
+	 * @return
+	 */
+	public int calculateNthPrime(int i) throws IllegalArgumentException{
+		if (i <= 0) throw new IllegalArgumentException();
+		
+		//time to build a sieve
+		int[] primes = new int[i];
+		int testval;
+		int metaiter;
+		
+		primes[0] = 2;
+		for (int iter = 1; iter < i; iter++)
+		{
+			testval = primes[iter-1] + 1;
+			for (metaiter = 0; metaiter < iter-1; metaiter++)
+			{
+				if (testval % primes[metaiter] == 0) 
+				{
+					testval ++;
+					metaiter = 0;
+				}
+			}
+			primes[iter] = testval;
+		}
+		return primes[primes.length-1];
+	}
+
+	/**
+	 * 13 & 14. Create an implementation of the atbash cipher, an ancient encryption
 	 * system created in the Middle East.
 	 * 
 	 * The Atbash cipher is a simple substitution cipher that relies on transposing
@@ -506,7 +630,7 @@ public class EvaluationService {
 	static class AtbashCipher {
 
 		/**
-		 * Question 11
+		 * Question 13
 		 * 
 		 * @param string
 		 * @return
@@ -537,7 +661,7 @@ public class EvaluationService {
 		}
 
 		/**
-		 * Question 12
+		 * Question 14
 		 * 
 		 * @param string
 		 * @return
@@ -562,9 +686,8 @@ public class EvaluationService {
 			return new String(outChars).trim().intern();
 		}
 	}
-
 	/**
-	 * 13. (Optional) The ISBN-10 verification process is used to validate book identification
+	 * 15. The ISBN-10 verification process is used to validate book identification
 	 * numbers. These normally contain dashes and look like: 3-598-21508-8
 	 * 
 	 * ISBN The ISBN-10 format is 9 digits (0 to 9) plus one check character (either
@@ -585,59 +708,185 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public boolean isValidIsbn(String string) {
-		if (string.length() != 13) return false;
-		
-		int sum = 0;
-		char[] stringAsChars = string.toCharArray();
-		
-		int metaiter = 10;
-		for (int iter = 0; iter < string.length(); iter++)
-		{
-			if (iter == 1 || iter == 5 || iter == 11) {
-				if (stringAsChars[iter] != '-') return false;
-			}
-				
-			else if (stringAsChars[iter] == 'X')
+		public boolean isValidIsbn(String string) {
+			if (string.length() != 13) return false;
+			
+			int sum = 0;
+			char[] stringAsChars = string.toCharArray();
+			
+			int metaiter = 10;
+			for (int iter = 0; iter < string.length(); iter++)
 			{
-				sum += 10*metaiter;
-				metaiter--;
+				if (iter == 1 || iter == 5 || iter == 11) {
+					if (stringAsChars[iter] != '-') return false;
+				}
+					
+				else if (stringAsChars[iter] == 'X')
+				{
+					sum += 10*metaiter;
+					metaiter--;
+				}
+				else if((int)(stringAsChars[iter] - '0') < 10)
+				{
+					sum += (int)(stringAsChars[iter] - '0')*metaiter;
+					metaiter--;
+				}
+				else return false;
 			}
-			else if((int)(stringAsChars[iter] - '0') < 10)
-			{
-				sum += (int)(stringAsChars[iter] - '0')*metaiter;
-				metaiter--;
-			}
-			else return false;
+			if (sum % 11 == 0) return true;
+			
+			return false;
 		}
-		if (sum % 11 == 0) return true;
-		
-		return false;
-	}
-
 
 	/**
-	 * 14. (Optional) Calculate the moment when someone has lived for 10^9 seconds.
+	 * 16. Determine if a sentence is a pangram. A pangram (Greek: παν γράμμα, pan
+	 * gramma, "every letter") is a sentence using every letter of the alphabet at
+	 * least once. The best known English pangram is:
+	 * 
+	 * The quick brown fox jumps over the lazy dog.
+	 * 
+	 * The alphabet used consists of ASCII letters a to z, inclusive, and is case
+	 * insensitive. Input will not contain non-ASCII symbols.
+	 * 
+	 * @param string
+	 * @return
+	 */
+		public boolean isPangram(String string) {
+			String stringLow = string.toLowerCase();
+			HashSet<Character> alpha = new HashSet<Character>();
+			for (char iter = 'a'; iter <= 'z'; iter++)
+			{
+				alpha.add(iter);
+			}
+			
+			char cur = '\0';
+			for (int siter = 0; siter < string.length(); siter++)
+			{
+				cur = stringLow.charAt(siter);
+				if (alpha.contains(cur)) alpha.remove(cur);
+				if (alpha.isEmpty()) return true;
+				cur = '\0';
+			}
+			
+			return false;
+		}
+
+	/**
+	 * 17. Calculate the moment when someone has lived for 10^9 seconds.
 	 * 
 	 * A gigasecond is 109 (1,000,000,000) seconds.
 	 * 
 	 * @param given
 	 * @return
 	 */
-	public Temporal getGigasecondDate(Temporal given) {
-		if (given.isSupported(ChronoField.SECOND_OF_MINUTE) == false)
-		{
-			LocalTime t = LocalTime.of(0, 0, 0, 0);
-			LocalDateTime g = LocalDateTime.of((LocalDate) given, t);
+		public Temporal getGigasecondDate(Temporal given) {
+			if (given.isSupported(ChronoField.SECOND_OF_MINUTE) == false)
+			{
+				LocalTime t = LocalTime.of(0, 0, 0, 0);
+				LocalDateTime g = LocalDateTime.of((LocalDate) given, t);
 
-			return Duration.ofSeconds(1000000000).addTo(g);			
+				return Duration.ofSeconds(1000000000).addTo(g);			
+			}
+			return Duration.ofSeconds(1000000000).addTo(given);
 		}
-		return Duration.ofSeconds(1000000000).addTo(given);
+
+
+	/**
+	 * 18. Given a number, find the sum of all the unique multiples of particular
+	 * numbers up to but not including that number.
+	 * 
+	 * If we list all the natural numbers below 20 that are multiples of 3 or 5, we
+	 * get 3, 5, 6, 9, 10, 12, 15, and 18.
+	 * 
+	 * The sum of these multiples is 78.
+	 * 
+	 * @param i
+	 * @param set
+	 * @return
+	 */
+	public int getSumOfMultiples(int i, int[] set) {
+		HashSet<Integer> multiples = new HashSet<Integer>();
+		int sum = 0;
+		
+		for (int iter = 1; iter < i; iter++)
+		{
+			for (int metaiter = 0; metaiter < set.length; metaiter++)
+			{
+				if (iter % set[metaiter] == 0) multiples.add(iter);
+			}
+		}
+		
+		for (Integer s : multiples)
+		{
+			sum += s;
+		}
+		
+		return sum;
 	}
 
-	
 	/**
-	 * 15. (Optional) Parse and evaluate simple math word problems returning the answer as an
+	 * 19. Given a number determine whether or not it is valid per the Luhn formula.
+	 * 
+	 * The Luhn algorithm is a simple checksum formula used to validate a variety of
+	 * identification numbers, such as credit card numbers and Canadian Social
+	 * Insurance Numbers.
+	 * 
+	 * The task is to check if a given string is valid.
+	 * 
+	 * Validating a Number Strings of length 1 or less are not valid. Spaces are
+	 * allowed in the input, but they should be stripped before checking. All other
+	 * non-digit characters are disallowed.
+	 * 
+	 * Example 1: valid credit card number 1 4539 1488 0343 6467 The first step of
+	 * the Luhn algorithm is to double every second digit, starting from the right.
+	 * We will be doubling
+	 * 
+	 * 4_3_ 1_8_ 0_4_ 6_6_ If doubling the number results in a number greater than 9
+	 * then subtract 9 from the product. The results of our doubling:
+	 * 
+	 * 8569 2478 0383 3437 Then sum all of the digits:
+	 * 
+	 * 8+5+6+9+2+4+7+8+0+3+8+3+3+4+3+7 = 80 If the sum is evenly divisible by 10,
+	 * then the number is valid. This number is valid!
+	 * 
+	 * Example 2: invalid credit card number 1 8273 1232 7352 0569 Double the second
+	 * digits, starting from the right
+	 * 
+	 * 7253 2262 5312 0539 Sum the digits
+	 * 
+	 * 7+2+5+3+2+2+6+2+5+3+1+2+0+5+3+9 = 57 57 is not evenly divisible by 10, so
+	 * this number is not valid.
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public boolean isLuhnValid(String string) {
+		if (string.length() < 1) return false;
+		
+		char[] stringAsCArr = string.toCharArray();
+		int sum = 0;
+		int cur = 0;
+		int metaiter = 1;
+		for (int iter = 0; iter < stringAsCArr.length; iter ++)
+		{
+			if (stringAsCArr[iter] != ' ')
+			{
+				cur = (int)(stringAsCArr[iter] - '0');
+				if (cur < 0 || cur > 9) return false;
+				if (metaiter % 2 == 0) cur *= 2;
+				if (cur > 9) cur -= 9;
+				sum += cur;
+				
+				metaiter++;
+			}
+		}
+		if (sum % 10 == 0) return true;
+		
+		return false;
+	}
+
+	/**
+	 * 20. Parse and evaluate simple math word problems returning the answer as an
 	 * integer.
 	 * 
 	 * Add two numbers together.
@@ -728,5 +977,7 @@ public class EvaluationService {
 		
 		return 0;
 	}
+
+
 
 }
