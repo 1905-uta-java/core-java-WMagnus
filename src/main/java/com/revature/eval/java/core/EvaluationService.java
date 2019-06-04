@@ -8,10 +8,12 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
 
 public class EvaluationService {
 
@@ -514,8 +516,18 @@ public class EvaluationService {
 		}
 		
 		if (pfactors.isEmpty()) pfactors.add((int)l);
-		
-		return pfactors;
+		Object[] pfactorsa = pfactors.toArray();
+		if (pfactorsa.length == 1) {
+			return Collections.singletonList((Integer)pfactorsa[0]);
+		} else {
+			Integer[] pfactorsai = new Integer[pfactorsa.length];
+			int iter = 0;
+			for (Integer p : pfactors) {
+				pfactorsai[iter] = p;
+				iter++;
+			}
+			return Arrays.asList(pfactorsai);
+		}
 	}
 
 	/**
@@ -595,11 +607,12 @@ public class EvaluationService {
 				if (testval % primes[metaiter] == 0) 
 				{
 					testval ++;
-					metaiter = 0;
+					metaiter = -1;
 				}
 			}
 			primes[iter] = testval;
 		}
+		
 		return primes[primes.length-1];
 	}
 
