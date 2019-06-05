@@ -480,13 +480,13 @@ public class EvaluationService {
 	 * @param l
 	 * @return
 	 */
-	public List<Integer> calculatePrimeFactorsOf(long l) {
-		ArrayList<Integer> pfactors = new ArrayList<Integer>();
+	public List<Long> calculatePrimeFactorsOf(long l) {
+		ArrayList<Long> pfactors = new ArrayList<Long>();
 		int primeScale = (int)Math.sqrt(l);
 		
 		//sieve for prime numbers
-		int[] primes = new int[primeScale];
-		int testval;
+		long[] primes = new long[primeScale];
+		long testval;
 		int metaiter;
 		
 		primes[0] = 2;
@@ -509,20 +509,20 @@ public class EvaluationService {
 		{
 			while (cur % primes[iter] == 0)
 			{
-				pfactors.add(primes[iter]);
+				pfactors.add((long) primes[iter]);
 				cur /= primes[iter];
 			}
 			cur = l;
 		}
 		
-		if (pfactors.isEmpty()) pfactors.add((int)l);
+		if (pfactors.isEmpty()) pfactors.add((long)l);
 		Object[] pfactorsa = pfactors.toArray();
 		if (pfactorsa.length == 1) {
-			return Collections.singletonList((Integer)pfactorsa[0]);
+			return Collections.singletonList((Long)pfactorsa[0]);
 		} else {
-			Integer[] pfactorsai = new Integer[pfactorsa.length];
+			Long[] pfactorsai = new Long[pfactorsa.length];
 			int iter = 0;
-			for (Integer p : pfactors) {
+			for (Long p : pfactors) {
 				pfactorsai[iter] = p;
 				iter++;
 			}
